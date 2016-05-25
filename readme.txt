@@ -1,0 +1,5 @@
+jedisproxy 是对jedis的一层封装
+
+主要对获取客户端操作对象，释放资源操作做了一层封装
+让代码更加简洁
+具体操作参考JedisTest.java
