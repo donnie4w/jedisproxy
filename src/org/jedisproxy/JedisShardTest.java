@@ -16,9 +16,9 @@ public class JedisShardTest {
 	public static ShardedJedisPool shardedJedisPool;
 	public static Jedis jedis;
 	static {
-		shard1 = new JedisShardInfo("127.0.0.1", 6379, 2000, 1);
+		shard1 = new JedisShardInfo("127.0.0.1", 6379, 2000, 2000, 1);
 		shard1.setPassword("aaaaaaaaaa");
-		shard2 = new JedisShardInfo("127.0.0.1", 6379, 2000, 6);
+		shard2 = new JedisShardInfo("127.0.0.1", 6379, 2000, 2000, 6);
 		shard2.setPassword("aaaaaaaaaa");
 		Shards.add(shard1);
 		Shards.add(shard2);
@@ -28,9 +28,7 @@ public class JedisShardTest {
 
 	public static void createPool() {
 		JedisPoolConfig jpc = new JedisPoolConfig();
-		jpc.setMaxActive(100);
 		jpc.setMaxIdle(50);
-		jpc.setMaxWait(1000l);
 		jpc.setTestOnBorrow(false);
 		shardedJedisPool = new ShardedJedisPool(jpc, Shards);
 	}

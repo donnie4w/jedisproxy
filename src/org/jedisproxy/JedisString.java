@@ -1,7 +1,5 @@
 package org.jedisproxy;
 
-import redis.clients.jedis.Jedis;
-
 /**
  * @author wuxiaodong
  * @function jedis的String 操作
@@ -70,19 +68,7 @@ public class JedisString extends JedisSource {
 	 * @throws JedisException
 	 */
 	public static long strlen(String key) throws JedisException {
-		Jedis j = getJedis();
-		boolean isException = false;
-		try {
-			return j.strlen(key);
-		} catch (Exception e) {
-			returnBrokenResource(j);
-			isException = true;
-			throw new JedisException(e);
-		} finally {
-			if (!isException) {
-				returnResource(j);
-			}
-		}
+		return getJProxy().strlen(key);
 	}
 
 	/**

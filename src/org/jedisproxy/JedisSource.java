@@ -1,5 +1,6 @@
 package org.jedisproxy;
 
+import redis.clients.jedis.BinaryJedisCommands;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCommands;
 import redis.clients.jedis.JedisPool;
@@ -31,6 +32,19 @@ public class JedisSource {
 	/**
 	 * @author dong
 	 * @methedDesc 方法描述：初始化
+	 * @param jpc
+	 * @param ip
+	 * @param port
+	 * @param timeout
+	 * @param pwd
+	 */
+	public static void init(JedisPoolConfig jpc, String ip, int port, int timeout) {
+		pool = new JedisPool(jpc, ip, port, timeout);
+	}
+
+	/**
+	 * @author dong
+	 * @methedDesc 方法描述：初始化
 	 * @param ip
 	 * @param port
 	 * @param timeout
@@ -51,18 +65,24 @@ public class JedisSource {
 	 */
 	public static JedisPoolConfig newJedisPoolConfig(int maxActive, int MinIdle, int maxwait) {
 		JedisPoolConfig jpc = new JedisPoolConfig();
-		jpc.setMaxActive(100);
-		jpc.setMinIdle(10);
-		jpc.setMaxWait(10000);
+		// jpc.setMaxActive(100);
+		jpc.setMaxTotal(maxActive);
+		jpc.setMinIdle(MinIdle);
+		jpc.setMaxWaitMillis(maxwait);
+		// jpc.setMaxWait(10000);
 		return jpc;
 	}
 
-	public static Jedis getJedis() {
+	protected static Jedis getJedis() {
 		return pool.getResource();
 	}
 
-	public static JedisCommands getJProxy() {
-		return ((JedisCommands) JedisProxy.newInstance().bind((Jedis) getJedis()));
+	// public static JedisCommands getJProxy() {
+	// return ((JedisCommands) JedisProxy.newInstance().bind(getJedis()));
+	// }
+
+	public static Commands getJProxy() {
+		return ((Commands) JedisProxy.newInstance().bind(new JedisClient(getJedis())));
 	}
 
 	public static Pipeline getPipeline() {

@@ -23,14 +23,26 @@ public class JedisProxy extends JedisSource implements InvocationHandler {
 		Object result = null;
 		boolean isException = false;
 		try {
-			result = method.invoke(target, args);
+			if (target instanceof JedisClient) {
+				result = method.invoke(((JedisClient) target).getJedis(), args);
+			} else {
+				result = method.invoke(target, args);
+			}
 		} catch (Exception e) {
 			isException = true;
-			returnBrokenResource((Jedis) target);
+			if (target instanceof JedisClient) {
+				returnBrokenResource(((JedisClient) target).getJedis());
+			} else if (target instanceof Jedis) {
+				returnBrokenResource(((Jedis) target));
+			}
 			throw new JedisException(e);
 		} finally {
 			if (!isException) {
-				returnResource((Jedis) target);
+				if (target instanceof JedisClient) {
+					returnResource(((JedisClient) target).getJedis());
+				} else if (target instanceof Jedis) {
+					returnResource((Jedis) target);
+				}
 			}
 		}
 		return result;
